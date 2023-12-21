@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SRC_DIR: ${{ github.workspace }}
-      # https://github.com/axonweb3/axon/commits/forcerelay-dev
-      AXON_COMMIT: 343f329b78b8187e28fdac9e9af6c28222656b92
+      # https://github.com/axonweb3/axon/commits/forcerelay-dev was protected
+      AXON_COMMIT: forcerelay-dev
       AXON_HTTP_RPC_URL: "http://127.0.0.1:8000"
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
         env:
           cache-name: cache-axon-bin
         with:
-          path: ${{env.SRC_DIR}}/axon/target/release/axon
+          path: ${{env.SRC_DIR}}/axon/target/debug/axon
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.AXON_COMMIT }}
   
       - name: Build Axon
@@ -43,20 +43,19 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --manifest-path ${{env.SRC_DIR}}/axon/Cargo.toml
+          args: --manifest-path ${{env.SRC_DIR}}/axon/Cargo.toml
       
       - name: Add axon bin to path
-        run: echo "${{env.SRC_DIR}}/axon/target/release/" >> $GITHUB_PATH
+        run: echo "${{env.SRC_DIR}}/axon/target/debug/" >> $GITHUB_PATH
 
       - name: Config axon
-        run: axon init --config  ${{env.SRC_DIR}}/axon/devtools/chain/config.toml --chain-spec  ${{env.SRC_DIR}}/axon/devtools/chain/specs/single_node/chain-spec.toml
+        run: axon init --config ${{env.SRC_DIR}}/axon/devtools/chain/config.toml --chain-spec ${{env.SRC_DIR}}/axon/devtools/chain/specs/single_node/chain-spec.toml
 
       - name: Start axon
-        run: axon run --config  ${{env.SRC_DIR}}/axon/devtools/chain/config.toml &
+        run: axon run --config ${{env.SRC_DIR}}/axon/devtools/chain/config.toml &
 
       - run: yarn install
-      - run: npx truffle version
-
       - run: yarn compile
+
       - name: Run test
         run: npx truffle test --network axon_forcerelay
