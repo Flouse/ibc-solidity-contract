@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SRC_DIR: ${{ github.workspace }}
-      # https://github.com/axonweb3/axon/commits/forcerelay-dev
-      AXON_COMMIT: 82e07910f687f59cf1f97e45120223f9ee8e948f
+      # https://github.com/axonweb3/axon/commits/forcerelay-dev was protected
+      AXON_COMMIT: forcerelay-dev
       AXON_HTTP_RPC_URL: "http://127.0.0.1:8000"
     steps:
       - uses: actions/checkout@v3
